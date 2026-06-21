@@ -1,0 +1,35 @@
+// FOR IMU
+hostname -I
+ros2 run data_phone phone_imu_node 
+ros2 topic echo /imu/data  
+//FOR MOTORS
+ros2 run motors fuzzy_cascaded_control  
+ros2 topic echo /right_rpm_setpoint
+ros2 topic echo /left_rpm_setpoint 
+
+ros2 launch motors motors_serial.launch.py 
+
+ros2 topic pub  /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.35, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+ros2 topic pub  /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+
+
+// FOR LIDAR
+ros2 launch ldlidar_stl_ros2 ld06.launch.py 
+
+
+//FOR BAG
+ros2 run bag bag_serial
+
+ros2 topic pub /motor_command std_msgs/msg/String "data: '1'"
+
+FOR APP
+
+cd carta_edge/car/
+python3 carta_edge.py 
+
+ros2 run order actions 
+
+ros2 topic pub -1 /cart/command_state std_msgs/msg/String "{data: 'unlock'}"
+ros2 topic pub -1 /cart/command_state std_msgs/msg/String "{data: 'emergency_stop'}"
+ros2 topic pub -1 /cart/command_state std_msgs/msg/String "{data: 'resume_motion'}"
+ros2 topic pub -1 /cart/command_state std_msgs/msg/String "{data: 'dispatch'}"
