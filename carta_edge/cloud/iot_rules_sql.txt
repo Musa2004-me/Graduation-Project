@@ -1,0 +1,23 @@
+==================================================
+⚙️ AWS IoT Core Rule SQL Configuration
+==================================================
+
+1. Rule Query Statement:
+--------------------------------------------------
+SELECT * FROM 'carta/telemetry/+'
+
+2. Rule Description:
+--------------------------------------------------
+Triggers automatically whenever any cart publishes telemetry (e.g. cart_001). 
+It captures the entire JSON payload and routes it to the target actions.
+
+3. Rule Actions (Destinations):
+--------------------------------------------------
+Action A: Invoke AWS Lambda function
+  - Target: arn:aws:lambda:eu-central-1:123456789012:function:CartaTelemetryProcessor
+  
+Action B: Archive directly to DynamoDB (Optional Alternative)
+  - Table: CartaTelemetry
+  - Partition Key: cart_id (String)
+  - Sort Key: timestamp (String)
+  - Role ARN: arn:aws:iam::123456789012:role/CartaIoTRuleDynamoDBRole
